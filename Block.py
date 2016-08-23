@@ -22,19 +22,32 @@ Block_types=[
  [1,0,0]]
 ]
 
+colors=[
+(0,100,150),
+(200,200,100),
+(200,100,100),
+(30,30,30)
+]
+
 Total_Blocks=len(Block_types)
 
 class Block:
     def __init__(self,mid):
-        ind=random.randint(0,Total_Blocks-1)
-        self.array=Block_types[ind]
-        self.dims= [len(Block_types[ind]) , len(Block_types[ind][0])]
+        blkind=random.randint(0,Total_Blocks-1)
+        colind=random.randint(1,len(colors))
+        self.array=Block_types[blkind]
+        self.dims= [len(Block_types[blkind]) , len(Block_types[blkind][0])]
         self.crds= [ -1*self.dims[0] , mid-self.dims[1]/2]
+        for i in xrange(self.dims[0]):
+            for j in xrange(self.dims[1]):
+                if self.array[i][j]==1: self.array[i][j]=colind
 
     def moveLeft(self):
-        self.crds[1]-=1
-    def moveRight(self):
-        self.crds[1]+=1
+        if self.crds[1]>0:
+            self.crds[1]-=1
+    def moveRight(self,maxC):
+        if self.crds[1]+self.dims[1]-1<maxC-1:
+            self.crds[1]+=1
     def moveDown(self):
         self.crds[0]+=1
 

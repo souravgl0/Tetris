@@ -4,7 +4,7 @@ from Block import colors
 import pygame as pyg
 import sys
 
-rows,cols=30,32
+rows,cols=20,18
 pixelMul=30
 bgCol=(51,51,0)
 
@@ -21,7 +21,7 @@ def RenderBoard(surface,array):
                 draw_rect(surface,colors[array[i][j]-1],bgCol,pyg.Rect(j*pixelMul,i*pixelMul,pixelMul,pixelMul))
 
 if __name__ == "__main__":
-    scr = pyg.display.set_mode((cols*pixelMul,rows*pixelMul))
+    scr = pyg.display.set_mode(((cols+10)*pixelMul,rows*pixelMul))
     game=Game(rows,cols)
     game.start()
     while(1):
@@ -41,6 +41,8 @@ if __name__ == "__main__":
                     rightWait=30
                 if event.key==pyg.K_s:
                     game.processInput('rotate')
+                if event.key==pyg.K_p:
+                    game.pause()
             elif event.type==pyg.KEYUP and event.key==pyg.K_SPACE:
                 game.processInput("spaceUp")
 
@@ -55,6 +57,17 @@ if __name__ == "__main__":
         sleep(0.01)
         scr.fill(bgCol)
         RenderBoard(scr,game.returnState())
-        pyg.display.flip()
 
-#------------------------------
+        sidePanel=pyg.Surface((10*pixelMul,rows*pixelMul))
+        sidePanel.fill((10,10,10))
+
+        pyg.font.init()
+        font=pyg.font.SysFont("Monospace",40)
+        scorelbl=font.render("Score: "+str(game.score),1,(255,255,0) )
+
+        if game.isGameOver():
+            message=font.render("GAME OVER",1,(0,255,255))
+            sidePanel.blit(message,(pixelMul,(rows/2)*pixelMul))
+        sidePanel.blit(scorelbl,(pixelMul,(rows-2)*pixelMul))
+        scr.blit(sidePanel,(cols*pixelMul,0))
+        pyg.display.flip()

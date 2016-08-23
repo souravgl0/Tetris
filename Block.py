@@ -43,11 +43,9 @@ class Block:
                 if self.array[i][j]==1: self.array[i][j]=colind
 
     def moveLeft(self):
-        if self.crds[1]>0:
-            self.crds[1]-=1
-    def moveRight(self,maxC):
-        if self.crds[1]+self.dims[1]-1<maxC-1:
-            self.crds[1]+=1
+        self.crds[1]-=1
+    def moveRight(self):
+        self.crds[1]+=1
     def moveDown(self):
         self.crds[0]+=1
 
@@ -67,3 +65,4 @@ class Block:
                 newarray[rows-j][i]=self.array[i][j]
         self.array=newarray
         self.dims,self.crds=self.vals_after_rotate()
+        print self.dims

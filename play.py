@@ -32,7 +32,7 @@ if __name__ == "__main__":
                 sys.exit()
             elif event.type==pyg.KEYDOWN:
                 if event.key==pyg.K_SPACE:
-                    game.processInput("spaceDown")
+                    game.moveFast()
                 if event.key==pyg.K_LEFT:
                     game.processInput('left')
                     leftWait=30
@@ -42,9 +42,14 @@ if __name__ == "__main__":
                 if event.key==pyg.K_s:
                     game.processInput('rotate')
                 if event.key==pyg.K_p:
-                    game.pause()
+                    game.togglePause()
+                if event.key==pyg.K_n:
+                    if game.isGameOver():
+                        del game
+                        game=Game(rows,cols)
+                        game.start()
             elif event.type==pyg.KEYUP and event.key==pyg.K_SPACE:
-                game.processInput("spaceUp")
+                game.moveFast(False)
 
         keys=pyg.key.get_pressed()
         if keys[pyg.K_LEFT]:
@@ -68,6 +73,10 @@ if __name__ == "__main__":
         if game.isGameOver():
             message=font.render("GAME OVER",1,(0,255,255))
             sidePanel.blit(message,(pixelMul,(rows/2)*pixelMul))
+            message=font.render("Press 'n' to restart",1,(0,255,255))
+            sidePanel.blit(message,(pixelMul,((rows/2)+2)*pixelMul))
+
+
         sidePanel.blit(scorelbl,(pixelMul,(rows-2)*pixelMul))
         scr.blit(sidePanel,(cols*pixelMul,0))
         pyg.display.flip()

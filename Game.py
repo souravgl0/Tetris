@@ -41,17 +41,16 @@ class Game:
     def processInput(self,inp):
         crds,dims=self._block.crds,self._block.dims
         if inp=="left":
-            if self._board.checkBoardEmpty( addCrds(crds,(0,-1)),addCrds(crds,(dims[0]-1,-1))):
+            if self._board.checkBoardEmpty( addCrds(crds,(0,-1)),addCrds(crds,(dims[0]-1,-1)) , [[i[0]] for i in self._block.array]):
                 self._block.moveLeft()
         elif inp=="right":
-            if self._board.checkBoardEmpty( addCrds(crds,(0,dims[1]-1+1)),addCrds(crds,(dims[0]-1,dims[1]-1+1))):
+            if self._board.checkBoardEmpty( addCrds(crds,(0,dims[1]-1+1)),addCrds(crds,(dims[0]-1,dims[1]-1+1)) ,[[i[-1]] for i in self._block.array]):
                 self._block.moveRight()
         elif inp=="rotate":
-            self._rotateBlock() 
-        elif inp=="spaceDown":
-            self._moveFast=True
-        elif inp=="spaceUp":
-            self._moveFast=False
+            self._rotateBlock()
+
+        if self._checkBlockLocked():
+            self._processBlockLock()
 
     def returnState(self):
         crds=self._block.crds
@@ -59,9 +58,22 @@ class Game:
         rarray=copy.deepcopy(self._board.array)
         for i in xrange(crds[0],crds[0]+dims[0]):
             for j in xrange(crds[1],crds[1]+dims[1]):
-                if i>=0: rarray[i][j]=self._block.array[i-crds[0]][j-crds[1]]
+                if i>=0 and self._block.array[i-crds[0]][j-crds[1]]!=0:
+                    rarray[i][j]=self._block.array[i-crds[0]][j-crds[1]]
 
         return rarray
+
+    def _processBlockLock(self):
+        self.score+=10
+        self._board.updateBoard(self._block.array,self._block.crds)
+        self._board.checkRowsFilled(range( self._block.crds[0] , self._block.crds[0]+self._block.dims[0] ))
+        del self._block
+        self._block=Block(self._rows/2) # new Block
+        if self._checkBlockLocked():
+            print "Game Over"
+            self._gameRunning=False
+            sys.exit()
+        self._moveFast=False
 
     def ContinueGame(self):
         if self._gameRunning==False:
@@ -71,15 +83,7 @@ class Game:
             self._block.crds[0]+=1
 
             if self._checkBlockLocked():
-                self.score+=10
-                self._board.updateBoard(self._block.array,self._block.crds)
-                self._board.checkRowsFilled(range( self._block.crds[0] , self._block.crds[0]+self._block.dims[0] ))
-                self._block=Block(self._rows/2) # new Block
-                if self._checkBlockLocked():
-                    print "Game Over"
-                    self._gameRunning=False
-                    sys.exit()
-                self._moveFast=False
+                self._processBlockLock()
 
         if self._moveFast:
             threading.Timer(self.MoveDownInt/50,self.ContinueGame).start()
@@ -88,11 +92,11 @@ class Game:
 
     def start(self):
         self.ContinueGame()
-
     def stop(self):
         self._gameRunning=False
-
     def isGameOver(self):
         return not self._gameRunning
-    def pause(self):
+    def togglePause(self):
         self._pause=not self._pause
+    def moveFast(self,state=True):
+        self._moveFast=state

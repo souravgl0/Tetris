@@ -65,4 +65,3 @@ class Block:
                 newarray[rows-j][i]=self.array[i][j]
         self.array=newarray
         self.dims,self.crds=self.vals_after_rotate()
-        print self.dims

@@ -5,10 +5,11 @@ class Board:
         self.array=[[0 for i in xrange(y)]
                             for i in xrange(x)]
 
-    def checkBoardEmpty(self,a,b):
+    def checkBoardEmpty(self,a,b , arrayToFit=None):
         for i in xrange(a[0],b[0]+1):
             for j in xrange(a[1],b[1]+1):
                 if i>=self.rows or j>=self.cols or i<0 or j<0: return False
+                if arrayToFit!=None and arrayToFit[i-a[0]][j-a[1]]==0: continue
                 if self.array[i][j]!=0: return False
         return True
 
@@ -21,6 +22,7 @@ class Board:
     def _deleteRow(self,row):
         newArray=[[0 for i in xrange(self.cols)] ]+ self.array[:row]+self.array[row+1:]
         self.array=newArray
+
     def checkRowsFilled(self,rows):
         for row in rows:
             filled=True

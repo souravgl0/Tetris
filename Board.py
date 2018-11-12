@@ -31,3 +31,4 @@ class Board:
                     filled=False
                     break
             if(filled):self._deleteRow(row)
+
